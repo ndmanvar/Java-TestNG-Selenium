@@ -121,6 +121,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
         driver.findElement(By.cssSelector(".search-form .formBtn")).click();
 
         // TODO: verify search occurred.
+        driver.quit();
     }
 
     /**
