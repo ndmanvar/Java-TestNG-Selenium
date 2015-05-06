@@ -1,11 +1,9 @@
 # Changes to be made (reference Sauce Account)
 
-Change line 37:
-
-Previous:
-`public SauceOnDemandAuthentication authentication = new SauceOnDemandAuthentication("YOUR_USERNAME", "YOUR_ACCESS_KEY");`
-
-Should be: `public SauceOnDemandAuthentication authentication = new SauceOnDemandAuthentication(YOUR_USERNAME, YOUR_ACCESS_KEY);`
+```
+	export SAUCE_USERNAME=your_username
+	export SAUCE_ACCESS_KEY=your_access_key
+```
 
 # Running the tests
 to run: `mvn test`
