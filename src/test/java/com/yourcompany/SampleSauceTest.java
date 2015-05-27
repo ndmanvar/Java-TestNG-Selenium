@@ -8,17 +8,27 @@ import com.saucelabs.common.SauceOnDemandAuthentication;
 import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import com.saucelabs.testng.SauceOnDemandAuthenticationProvider;
 import com.saucelabs.testng.SauceOnDemandTestListener;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import static org.testng.Assert.assertEquals;
 
 
@@ -56,12 +66,14 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     public static Object[][] sauceBrowserDataProvider(Method testMethod) {
         return new Object[][]{
                 new Object[]{"internet explorer", "11", "Windows 8.1"},
-                new Object[]{"safari", "6", "OSX 10.8"},
+                new Object[]{"chrome", "41", "Windows XP"},
+                new Object[]{"safari", "7", "OS X 10.9"},
+                new Object[]{"firefox", "36", "Windows 7"},
+                new Object[]{"firefox", "35", "Windows 7"}
         };
     }
 
     /**
-     * /**
      * Constructs a new {@link RemoteWebDriver} instance which is configured to use the capabilities defined by the browser,
      * version and os parameters, and which is configured to run against ondemand.saucelabs.com, using
      * the username and access key populated by the {@link #authentication} instance.
@@ -72,7 +84,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @return
      * @throws MalformedURLException if an error occurs parsing the url
      */
-    private WebDriver createDriver(String browser, String version, String os) throws MalformedURLException {
+    private WebDriver createDriver(String browser, String version, String os, String methodName) throws MalformedURLException {
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
@@ -80,7 +92,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
             capabilities.setCapability(CapabilityType.VERSION, version);
         }
         capabilities.setCapability(CapabilityType.PLATFORM, os);
-        capabilities.setCapability("name", "Sauce Sample Test");
+        capabilities.setCapability("name", methodName + '_' + os + '_' + browser + '_' + version);
         webDriver.set(new RemoteWebDriver(
                 new URL("http://" + authentication.getUsername() + ":" + authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"),
                 capabilities));
@@ -88,20 +100,9 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
         return webDriver.get();
     }
 
-    /**
-     * Runs a simple test verifying the title of the wikipedia.org home page.
-     *
-     * @param browser Represents the browser to be used as part of the test run.
-     * @param version Represents the version of the browser to be used as part of the test run.
-     * @param os Represents the operating system to be used as part of the test run.
-     * @throws Exception if an error occurs during the running of the test
-     */
-    @Test(dataProvider = "hardCodedBrowsers")
-    public void wikipediaTitleTest(String browser, String version, String os) throws Exception {
-        WebDriver driver = createDriver(browser, version, os);
-        driver.get("http://www.wikipedia.org/");
-        assertEquals(driver.getTitle(), "Wikipedia");
-        driver.quit();
+    @AfterMethod
+    public void tearDown() throws Exception {
+        webDriver.get().quit();
     }
 
     /**
@@ -110,18 +111,72 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param browser Represents the browser to be used as part of the test run.
      * @param version Represents the version of the browser to be used as part of the test run.
      * @param os Represents the operating system to be used as part of the test run.
+     * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
     @Test(dataProvider = "hardCodedBrowsers")
-    public void wikipediaSearchTest(String browser, String version, String os) throws Exception {
-        WebDriver driver = createDriver(browser, version, os);
-        driver.get("http://www.wikipedia.org/");
+    public void pandoraTitleTest(String browser, String version, String os, Method method) throws Exception {
+    	WebDriver driver = createDriver(browser, version, os, method.getName());
+        Thread.sleep(30000);
+        driver.get("http://www.pandora.com/");
 
-        driver.findElement(By.cssSelector("#searchInput")).sendKeys("sampleText");
-        driver.findElement(By.cssSelector(".search-form .formBtn")).click();
+        assertEquals(driver.getTitle(), "Pandora Internet Radio - Listen to Free Music You'll Love");
+    }
 
-        // TODO: verify search occurred.
-        driver.quit();
+    /**
+     * Runs a simple test verifying the login form and login button of the pandora.com home page.
+     *
+     * @param browser Represents the browser to be used as part of the test run.
+     * @param version Represents the version of the browser to be used as part of the test run.
+     * @param os Represents the operating system to be used as part of the test run.
+     * @param Method Represents the method, used for getting the name of the test/method
+     * @throws Exception if an error occurs during the running of the test
+     */
+    @Test(dataProvider = "hardCodedBrowsers")
+    public void welcomeScreenLaunchTest(String browser, String version, String os, Method method) throws Exception {
+        WebDriver driver = createDriver(browser, version, os, method.getName());
+        Thread.sleep(30000);
+        driver.get("http://www.pandora.com/");
+
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        // click signin button
+        WebElement signInButton = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".message.signin a")));
+        Thread.sleep(5000);
+        signInButton.click();
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=email]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=password]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".message.register a")));
+    }
+
+    /**
+     * Types in coldplay in the pandora search box, clicks Coldplay, and verifies Coldplay playlist is playing
+     *
+     * @param browser Represents the browser to be used as part of the test run.
+     * @param version Represents the version of the browser to be used as part of the test run.
+     * @param os Represents the operating system to be used as part of the test run.
+     * @param Method Represents the method, used for getting the name of the test/method
+     * @throws Exception if an error occurs during the running of the test
+     */
+    @Test(dataProvider = "hardCodedBrowsers")
+    public void coldplayTest(String browser, String version, String os, Method method) throws Exception {
+    	WebDriver driver = createDriver(browser, version, os, method.getName());
+        Thread.sleep(30000);
+        driver.get("http://www.pandora.com/");
+
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        // click signin button
+        WebElement searchBox = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#welcomeSearch .searchInput")));
+        Thread.sleep(3000);
+        searchBox.sendKeys("coldplay");
+
+        WebElement coldplaySuggestion = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='searchPopupWelcomePosition']//span[contains(text(), 'Coldplay')]")));
+        coldplaySuggestion.click();
+
+        WebElement topMenu = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".stationChangeSelectorNoMenu")));
+        Assert.assertTrue(topMenu.getText().contains("Coldplay"), "Text not found!");
     }
 
     /**
