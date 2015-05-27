@@ -40,11 +40,14 @@ import static org.testng.Assert.assertEquals;
 @Listeners({SauceOnDemandTestListener.class})
 public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnDemandAuthenticationProvider {
 
+    public String username = System.getenv("SAUCE_USERNAME") != null ? System.getenv("SAUCE_USERNAME") : System.getenv("SAUCE_USER_NAME");
+    public String accesskey = System.getenv("SAUCE_ACCESS_KEY") != null ? System.getenv("SAUCE_ACCESS_KEY") : System.getenv("SAUCE_API_KEY");
+
     /**
-     * Constructs a {@link com.saucelabs.common.SauceOnDemandAuthentication} instance using the supplied user name/access key.  To use the authentication
-     * supplied by environment variables or from an external file, use the no-arg {@link com.saucelabs.common.SauceOnDemandAuthentication} constructor.
+     * Constructs a {@link SauceOnDemandAuthentication} instance using the supplied user name/access key.  To use the authentication
+     * supplied by environment variables or from an external file, use the no-arg {@link SauceOnDemandAuthentication} constructor.
      */
-    public SauceOnDemandAuthentication authentication = new SauceOnDemandAuthentication(System.getenv("SAUCE_USERNAME"), System.getenv("SAUCE_ACCESS_KEY"));
+    public SauceOnDemandAuthentication authentication = new SauceOnDemandAuthentication(username, accesskey);
 
     /**
      * ThreadLocal variable which contains the  {@link WebDriver} instance which is used to perform browser interactions with.
