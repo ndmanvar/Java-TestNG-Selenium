@@ -68,20 +68,11 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     @DataProvider(name = "hardCodedBrowsers", parallel = true)
     public static Object[][] sauceBrowserDataProvider(Method testMethod) {
         return new Object[][]{
-                // new Object[]{"internet explorer", "11", "Windows 8.1"},
-                // new Object[]{"chrome", "41", "Windows XP"},
-                // new Object[]{"safari", "7", "OS X 10.9"},
-                // new Object[]{"firefox", "36", "Windows 7"},
-                // new Object[]{"firefox", "35", "Windows 7"}
+                new Object[]{"internet explorer", "11", "Windows 8.1"},
                 new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"},
-                new Object[]{"chrome", "41", "Windows XP"}
-
+                new Object[]{"safari", "7", "OS X 10.9"},
+                new Object[]{"firefox", "36", "Windows 7"},
+                new Object[]{"firefox", "35", "Windows 7"}
         };
     }
 
@@ -129,7 +120,6 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     @Test(dataProvider = "hardCodedBrowsers")
     public void pandoraTitleTest(String browser, String version, String os, Method method) throws Exception {
     	WebDriver driver = createDriver(browser, version, os, method.getName());
-        Thread.sleep(30000);
         driver.get("http://www.pandora.com/");
 
         assertEquals(driver.getTitle(), "Pandora Internet Radio - Listen to Free Music You'll Love");
@@ -147,7 +137,6 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     @Test(dataProvider = "hardCodedBrowsers")
     public void welcomeScreenLaunchTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
-        Thread.sleep(30000);
         driver.get("http://www.pandora.com/");
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
@@ -174,7 +163,6 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     @Test(dataProvider = "hardCodedBrowsers")
     public void coldplayTest(String browser, String version, String os, Method method) throws Exception {
     	WebDriver driver = createDriver(browser, version, os, method.getName());
-        Thread.sleep(30000);
         driver.get("http://www.pandora.com/");
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
