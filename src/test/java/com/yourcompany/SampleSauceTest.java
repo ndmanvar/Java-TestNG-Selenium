@@ -75,6 +75,11 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
                 // new Object[]{"firefox", "35", "Windows 7"}
                 new Object[]{"chrome", "41", "Windows XP"},
                 new Object[]{"chrome", "41", "Windows XP"},
+                new Object[]{"chrome", "41", "Windows XP"},
+                new Object[]{"chrome", "41", "Windows XP"},
+                new Object[]{"chrome", "41", "Windows XP"},
+                new Object[]{"chrome", "41", "Windows XP"},
+                new Object[]{"chrome", "41", "Windows XP"},
                 new Object[]{"chrome", "41", "Windows XP"}
 
         };
