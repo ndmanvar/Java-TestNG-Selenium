@@ -102,7 +102,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
                 capabilities));
         sessionId.set(((RemoteWebDriver) getWebDriver()).getSessionId().toString());
 
-        System.out.println("SauceOnDemandSessionID=" + sessionId.get() + " job-name=" + methodName);
+        // System.out.println("SauceOnDemandSessionID=" + sessionId.get() + " job-name=" + methodName);
         return webDriver.get();
     }
 
@@ -186,7 +186,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @return the {@link WebDriver} for the current thread
      */
     public WebDriver getWebDriver() {
-        System.out.println("WebDriver" + webDriver.get());
+        // System.out.println("WebDriver" + webDriver.get());
         return webDriver.get();
     }
 
