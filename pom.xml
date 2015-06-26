@@ -56,7 +56,7 @@
                 <configuration>
                 	<parallel>methods</parallel>
           			<threadCount>20</threadCount>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
                 </configuration>
             </plugin>
         </plugins>
