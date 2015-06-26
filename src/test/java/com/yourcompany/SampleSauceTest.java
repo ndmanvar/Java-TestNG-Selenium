@@ -38,7 +38,7 @@ import static org.testng.Assert.assertEquals;
  * @author Neil Manvar
  */
 @Listeners({SauceOnDemandTestListener.class})
-public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnDemandAuthenticationProvider {
+public class SampleSauceTest implements SauceOnDemandAuthenticationProvider {
 
     public String username = System.getenv("SAUCE_USER_NAME") != null ? System.getenv("SAUCE_USER_NAME") : System.getenv("SAUCE_USERNAME");
     public String accesskey = System.getenv("SAUCE_API_KEY") != null ? System.getenv("SAUCE_API_KEY") : System.getenv("SAUCE_ACCESS_KEY");
@@ -95,11 +95,18 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
             capabilities.setCapability(CapabilityType.VERSION, version);
         }
         capabilities.setCapability(CapabilityType.PLATFORM, os);
-        capabilities.setCapability("name", methodName + '_' + os + '_' + browser + '_' + version);
+
+        String jobName = methodName + '_' + os + '_' + browser + '_' + version;
+        capabilities.setCapability("name", jobName);
         webDriver.set(new RemoteWebDriver(
                 new URL("http://" + authentication.getUsername() + ":" + authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"),
                 capabilities));
-        sessionId.set(((RemoteWebDriver) getWebDriver()).getSessionId().toString());
+        String id = ((RemoteWebDriver) getWebDriver()).getSessionId().toString();
+        sessionId.set(id);
+
+        String message = String.format("SauceOnDemandSessionID=%1$s job-name=%2$s", id, jobName);
+        System.out.println(message);
+
         return webDriver.get();
     }
 
@@ -183,16 +190,8 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @return the {@link WebDriver} for the current thread
      */
     public WebDriver getWebDriver() {
-        System.out.println("WebDriver" + webDriver.get());
+        // System.out.println("WebDriver" + webDriver.get());
         return webDriver.get();
-    }
-
-    /**
-     *
-     * @return the Sauce Job id for the current thread
-     */
-    public String getSessionId() {
-        return sessionId.get();
     }
 
     /**
