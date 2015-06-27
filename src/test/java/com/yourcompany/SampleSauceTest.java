@@ -156,6 +156,8 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=email]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=password]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".message.register a")));
+
+        Assert.assertTrue(false, "This should fail");
     }
 
     /**
