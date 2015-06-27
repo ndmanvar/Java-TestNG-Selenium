@@ -194,6 +194,10 @@ public class SampleSauceTest implements SauceOnDemandAuthenticationProvider {
         return webDriver.get();
     }
 
+    public String getSessionId() {
+        return sessionId.get();
+    }
+
     /**
      *
      * @return the {@link SauceOnDemandAuthentication} instance containing the Sauce username/access key
