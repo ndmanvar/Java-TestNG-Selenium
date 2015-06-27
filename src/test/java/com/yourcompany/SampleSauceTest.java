@@ -95,11 +95,18 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
             capabilities.setCapability(CapabilityType.VERSION, version);
         }
         capabilities.setCapability(CapabilityType.PLATFORM, os);
-        capabilities.setCapability("name", methodName + '_' + os + '_' + browser + '_' + version);
+
+        String jobName = methodName + '_' + os + '_' + browser + '_' + version;
+        capabilities.setCapability("name", jobName);
         webDriver.set(new RemoteWebDriver(
                 new URL("http://" + authentication.getUsername() + ":" + authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"),
                 capabilities));
-        sessionId.set(((RemoteWebDriver) getWebDriver()).getSessionId().toString());
+        String id = ((RemoteWebDriver) getWebDriver()).getSessionId().toString();
+        sessionId.set(id);
+
+        String message = String.format("SauceOnDemandSessionID=%1$s job-name=%2$s", id, jobName);
+        System.out.println(message);
+
         return webDriver.get();
     }
 
