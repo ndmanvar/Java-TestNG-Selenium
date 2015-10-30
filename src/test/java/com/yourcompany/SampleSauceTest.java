@@ -75,7 +75,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     	
     	JSONArray browsersJSONArrayObj = new JSONArray(browsersJSONArrayString);
     	
-    	Object[][] browserObjArray = new Object[browsersJSONArrayObj.length()][1];
+    	Object[][] browserObjArray = new Object[browsersJSONArrayObj.length()][3];
     	
     	for (int i=0; i<browsersJSONArrayObj.length(); i++) {
     		JSONObject browserObj = (JSONObject)browsersJSONArrayObj.getJSONObject(i);
