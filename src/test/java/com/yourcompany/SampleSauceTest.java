@@ -9,8 +9,8 @@ import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import com.saucelabs.testng.SauceOnDemandAuthenticationProvider;
 import com.saucelabs.testng.SauceOnDemandTestListener;
 
+import com.yourcompany.utils.RetryRule;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -20,7 +20,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -28,7 +27,6 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
 
@@ -127,10 +125,9 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
-    @Test(dataProvider = "hardCodedBrowsers")
+    @Test(dataProvider = "hardCodedBrowsers", retryAnalyzer = RetryRule.class)
     public void pandoraTitleTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         driver.get("http://www.pandora.com/");
 
         assertEquals(driver.getTitle(), "Pandora Internet Radio - Listen to Free Music You'll Love");
@@ -145,18 +142,16 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
-    @Test(dataProvider = "hardCodedBrowsers")
+    @Test(dataProvider = "hardCodedBrowsers", retryAnalyzer = RetryRule.class)
     public void welcomeScreenLaunchTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         driver.get("http://www.pandora.com/");
 
-        WebDriverWait wait = new WebDriverWait(driver, 30);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
 
         // click signin button
-        WebElement signInButton =
-                wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".message.signin a")));
-        //Thread.sleep(5000);
+        WebElement signInButton = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".message.signin a")));
+        Thread.sleep(5000);
         signInButton.click();
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=email]")));
@@ -173,26 +168,22 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
-    @Test(dataProvider = "hardCodedBrowsers")
+    @Test(dataProvider = "hardCodedBrowsers", retryAnalyzer = RetryRule.class)
     public void coldplayTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         driver.get("http://www.pandora.com/");
 
-        WebDriverWait wait = new WebDriverWait(driver, 30);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
 
         // click signin button
-        WebElement searchBox =
-                wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#welcomeSearch .searchInput")));
-        //Thread.sleep(3000);
+        WebElement searchBox = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#welcomeSearch .searchInput")));
+        Thread.sleep(3000);
         searchBox.sendKeys("coldplay");
 
-        WebElement coldplaySuggestion =
-                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='searchPopupWelcomePosition']//span[contains(text(), 'Coldplay')]")));
+        WebElement coldplaySuggestion = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='searchPopupWelcomePosition']//span[contains(text(), 'Coldplay')]")));
         coldplaySuggestion.click();
 
-        WebElement topMenu =
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".stationChangeSelectorNoMenu")));
+        WebElement topMenu = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".stationChangeSelectorNoMenu")));
         Assert.assertTrue(topMenu.getText().contains("Coldplay"), "Text not found!");
     }
 
