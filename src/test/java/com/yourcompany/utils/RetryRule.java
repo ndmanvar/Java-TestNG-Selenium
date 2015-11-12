@@ -9,7 +9,7 @@ import org.testng.util.RetryAnalyzerCount;
 public class RetryRule extends RetryAnalyzerCount {
     public RetryRule() {
         //We probably want to get this from CLI or some config file.
-        super.setCount(5);
+        super.setCount(1);
     }
 
     @Override
