@@ -9,8 +9,8 @@ import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import com.saucelabs.testng.SauceOnDemandAuthenticationProvider;
 import com.saucelabs.testng.SauceOnDemandTestListener;
 
+import com.yourcompany.utils.RetryRule;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -20,7 +20,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -73,8 +72,10 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
                 new Object[]{"safari", "7", "OS X 10.9"},
                 new Object[]{"firefox", "36", "Windows 7"},
                 new Object[]{"firefox", "35", "Windows 7"}
+
         };
     }
+
 
     /**
      * Constructs a new {@link RemoteWebDriver} instance which is configured to use the capabilities defined by the browser,
@@ -124,7 +125,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
-    @Test(dataProvider = "hardCodedBrowsers")
+    @Test(dataProvider = "hardCodedBrowsers", retryAnalyzer = RetryRule.class)
     public void pandoraTitleTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
         driver.get("http://www.pandora.com/");
@@ -141,7 +142,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
-    @Test(dataProvider = "hardCodedBrowsers")
+    @Test(dataProvider = "hardCodedBrowsers", retryAnalyzer = RetryRule.class)
     public void welcomeScreenLaunchTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
         driver.get("http://www.pandora.com/");
@@ -167,7 +168,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @param Method Represents the method, used for getting the name of the test/method
      * @throws Exception if an error occurs during the running of the test
      */
-    @Test(dataProvider = "hardCodedBrowsers")
+    @Test(dataProvider = "hardCodedBrowsers", retryAnalyzer = RetryRule.class)
     public void coldplayTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
         driver.get("http://www.pandora.com/");
