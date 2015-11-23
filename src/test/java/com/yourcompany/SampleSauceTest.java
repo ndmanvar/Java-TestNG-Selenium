@@ -4,32 +4,31 @@ package com.yourcompany;
  * @author Neil Manvar
  */
 
+// import Sauce TestNG helper libraries
 import com.saucelabs.common.SauceOnDemandAuthentication;
 import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import com.saucelabs.testng.SauceOnDemandAuthenticationProvider;
 import com.saucelabs.testng.SauceOnDemandTestListener;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+// import selenium libraries
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
+
+// import testng libraries
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.testng.Assert.assertEquals;
+// import page objects
+import com.yourcompany.Pages.*;
 
 
 /**
@@ -40,8 +39,8 @@ import static org.testng.Assert.assertEquals;
 @Listeners({SauceOnDemandTestListener.class})
 public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnDemandAuthenticationProvider {
 
-    public String username = System.getenv("SAUCE_USER_NAME") != null ? System.getenv("SAUCE_USER_NAME") : System.getenv("SAUCE_USERNAME");
-    public String accesskey = System.getenv("SAUCE_API_KEY") != null ? System.getenv("SAUCE_API_KEY") : System.getenv("SAUCE_ACCESS_KEY");
+    public String username = System.getenv("SAUCE_USERNAME");
+    public String accesskey = System.getenv("SAUCE_ACCESS_KEY");
 
     /**
      * Constructs a {@link SauceOnDemandAuthentication} instance using the supplied user name/access key.  To use the authentication
@@ -74,6 +73,14 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
                 new Object[]{"firefox", "36", "Windows 7"},
                 new Object[]{"firefox", "35", "Windows 7"}
         };
+    }
+    
+    /**
+     * @return the {@link WebDriver} for the current thread
+     */
+    public WebDriver getWebDriver() {
+        System.out.println("WebDriver" + webDriver.get());
+        return webDriver.get();
     }
 
     /**
@@ -125,74 +132,28 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @throws Exception if an error occurs during the running of the test
      */
     @Test(dataProvider = "hardCodedBrowsers")
-    public void pandoraTitleTest(String browser, String version, String os, Method method) throws Exception {
+    public void verifyTitleTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
-        driver.get("http://www.pandora.com/");
-
-        assertEquals(driver.getTitle(), "Pandora Internet Radio - Listen to Free Music You'll Love");
+        
+        driver.get("https://saucelabs.com/test/guinea-pig");
+        
+        assertEquals(driver.getTitle(), "I am a page title - Sauce Labs");
     }
-
-    /**
-     * Runs a simple test verifying the login form and login button of the pandora.com home page.
-     *
-     * @param browser Represents the browser to be used as part of the test run.
-     * @param version Represents the version of the browser to be used as part of the test run.
-     * @param os Represents the operating system to be used as part of the test run.
-     * @param Method Represents the method, used for getting the name of the test/method
-     * @throws Exception if an error occurs during the running of the test
-     */
+    
     @Test(dataProvider = "hardCodedBrowsers")
-    public void welcomeScreenLaunchTest(String browser, String version, String os, Method method) throws Exception {
+    public void verifyEmailInputTest(String browser, String version, String os, Method method) throws Exception {
         WebDriver driver = createDriver(browser, version, os, method.getName());
-        driver.get("http://www.pandora.com/");
-
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-
-        // click signin button
-        WebElement signInButton = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".message.signin a")));
-        Thread.sleep(5000);
-        signInButton.click();
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=email]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".loginForm [name=password]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".message.register a")));
+        String emailInputText = "abc@gmail.com";
+        
+        driver.get("https://saucelabs.com/test/guinea-pig");
+        
+        GuineaPig page = new GuineaPig(driver);
+        page.fillOutEmailInput(emailInputText);
+        
+        assertEquals(page.getEmailInput(), emailInputText);
     }
 
-    /**
-     * Types in coldplay in the pandora search box, clicks Coldplay, and verifies Coldplay playlist is playing
-     *
-     * @param browser Represents the browser to be used as part of the test run.
-     * @param version Represents the version of the browser to be used as part of the test run.
-     * @param os Represents the operating system to be used as part of the test run.
-     * @param Method Represents the method, used for getting the name of the test/method
-     * @throws Exception if an error occurs during the running of the test
-     */
-    @Test(dataProvider = "hardCodedBrowsers")
-    public void coldplayTest(String browser, String version, String os, Method method) throws Exception {
-        WebDriver driver = createDriver(browser, version, os, method.getName());
-        driver.get("http://www.pandora.com/");
-
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-
-        // click signin button
-        WebElement searchBox = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#welcomeSearch .searchInput")));
-        Thread.sleep(3000);
-        searchBox.sendKeys("coldplay");
-
-        WebElement coldplaySuggestion = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='searchPopupWelcomePosition']//span[contains(text(), 'Coldplay')]")));
-        coldplaySuggestion.click();
-
-        WebElement topMenu = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".stationChangeSelectorNoMenu")));
-        Assert.assertTrue(topMenu.getText().contains("Coldplay"), "Text not found!");
-    }
-
-    /**
-     * @return the {@link WebDriver} for the current thread
-     */
-    public WebDriver getWebDriver() {
-        System.out.println("WebDriver" + webDriver.get());
-        return webDriver.get();
-    }
+    
 
     /**
      *
