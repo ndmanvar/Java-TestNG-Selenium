@@ -39,7 +39,10 @@ import com.yourcompany.Pages.*;
 @Listeners({SauceOnDemandTestListener.class})
 public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnDemandAuthenticationProvider {
 
+    // Sauce username
     public String username = System.getenv("SAUCE_USERNAME");
+
+    // Sauce access key
     public String accesskey = System.getenv("SAUCE_ACCESS_KEY");
 
     /**
@@ -70,7 +73,6 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
                 new Object[]{"internet explorer", "11", "Windows 8.1"},
                 new Object[]{"chrome", "41", "Windows XP"},
                 new Object[]{"safari", "7", "OS X 10.9"},
-                new Object[]{"firefox", "36", "Windows 7"},
                 new Object[]{"firefox", "35", "Windows 7"}
         };
     }
@@ -79,81 +81,8 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @return the {@link WebDriver} for the current thread
      */
     public WebDriver getWebDriver() {
-        System.out.println("WebDriver" + webDriver.get());
         return webDriver.get();
     }
-
-    /**
-     * Constructs a new {@link RemoteWebDriver} instance which is configured to use the capabilities defined by the browser,
-     * version and os parameters, and which is configured to run against ondemand.saucelabs.com, using
-     * the username and access key populated by the {@link #authentication} instance.
-     *
-     * @param browser Represents the browser to be used as part of the test run.
-     * @param version Represents the version of the browser to be used as part of the test run.
-     * @param os Represents the operating system to be used as part of the test run.
-     * @return
-     * @throws MalformedURLException if an error occurs parsing the url
-     */
-    private WebDriver createDriver(String browser, String version, String os, String methodName) throws MalformedURLException {
-
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
-        if (version != null) {
-            capabilities.setCapability(CapabilityType.VERSION, version);
-        }
-        capabilities.setCapability(CapabilityType.PLATFORM, os);
-
-        String jobName = methodName + '_' + os + '_' + browser + '_' + version;
-        capabilities.setCapability("name", jobName);
-        webDriver.set(new RemoteWebDriver(
-                new URL("http://" + authentication.getUsername() + ":" + authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"),
-                capabilities));
-        String id = ((RemoteWebDriver) getWebDriver()).getSessionId().toString();
-        sessionId.set(id);
-
-        String message = String.format("SauceOnDemandSessionID=%1$s job-name=%2$s", id, jobName);
-        System.out.println(message);
-
-        return webDriver.get();
-    }
-
-    @AfterMethod
-    public void tearDown() throws Exception {
-        webDriver.get().quit();
-    }
-
-    /**
-     * Runs a simple test verifying the title of the wikipedia.org home page.
-     *
-     * @param browser Represents the browser to be used as part of the test run.
-     * @param version Represents the version of the browser to be used as part of the test run.
-     * @param os Represents the operating system to be used as part of the test run.
-     * @param Method Represents the method, used for getting the name of the test/method
-     * @throws Exception if an error occurs during the running of the test
-     */
-    @Test(dataProvider = "hardCodedBrowsers")
-    public void verifyTitleTest(String browser, String version, String os, Method method) throws Exception {
-        WebDriver driver = createDriver(browser, version, os, method.getName());
-        
-        driver.get("https://saucelabs.com/test/guinea-pig");
-        
-        assertEquals(driver.getTitle(), "I am a page title - Sauce Labs");
-    }
-    
-    @Test(dataProvider = "hardCodedBrowsers")
-    public void verifyEmailInputTest(String browser, String version, String os, Method method) throws Exception {
-        WebDriver driver = createDriver(browser, version, os, method.getName());
-        String emailInputText = "abc@gmail.com";
-        
-        driver.get("https://saucelabs.com/test/guinea-pig");
-        
-        GuineaPig page = new GuineaPig(driver);
-        page.fillOutEmailInput(emailInputText);
-        
-        assertEquals(page.getEmailInput(), emailInputText);
-    }
-
-    
 
     /**
      *
@@ -171,5 +100,85 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
     public SauceOnDemandAuthentication getAuthentication() {
         return authentication;
     }
-}
 
+    /**
+     * Constructs a new {@link RemoteWebDriver} instance which is configured to use the capabilities defined by the browser,
+     * version and os parameters, and which is configured to run against ondemand.saucelabs.com, using
+     * the username and access key populated by the {@link #authentication} instance.
+     *
+     * @param browser Represents the browser to be used as part of the test run.
+     * @param version Represents the version of the browser to be used as part of the test run.
+     * @param os Represents the operating system to be used as part of the test run.
+     * @param methodName Represents the name of the test case that will be used to identify the test on Sauce.
+     * @return
+     * @throws MalformedURLException if an error occurs parsing the url
+     */
+    private WebDriver createDriver(String browser, String version, String os, String methodName) throws MalformedURLException {
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
+        if (version != null) {
+            capabilities.setCapability(CapabilityType.VERSION, version);
+        }
+        capabilities.setCapability(CapabilityType.PLATFORM, os);
+
+        capabilities.setCapability("name", methodName);
+        webDriver.set(new RemoteWebDriver(
+                new URL("http://" + authentication.getUsername() + ":" + authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"),
+                capabilities));
+        String id = ((RemoteWebDriver) getWebDriver()).getSessionId().toString();
+        sessionId.set(id);
+
+        String message = String.format("SauceOnDemandSessionID=%1$s job-name=%2$s", id, methodName);
+        System.out.println(message);
+
+        return webDriver.get();
+    }
+    
+    /**
+     * Method that gets invoked after test.
+     * Closes the browser
+     *
+     * @param testMethod
+     * @return
+     */
+    @AfterMethod
+    public void tearDown() throws Exception {
+        webDriver.get().quit();
+    }
+
+    /**
+     * Runs a simple test verifying inputField can typed into.
+     *
+     * @param browser
+     * @param version Represents the version of the browser to be used as part of the test run.
+     * @param os Represents the operating system to be used as part of the test run.
+     * @param method Represents the name of the test.
+     * @throws Exception if an error occurs during the running of the test
+     */
+    @Test(dataProvider = "hardCodedBrowsers")
+    public void verifyEmailInputTest(String browser, String version, String os, Method method) throws Exception {
+        // all variable declarations should be at top of method
+        WebDriver driver = createDriver(browser, version, os, method.getName());  // create the driver / browser instance
+        String emailInputText = "abc@gmail.com";
+        
+        
+        // actions and interaction with page should go here...
+        driver.get("https://saucelabs.com/test/guinea-pig");
+        
+        // use page object to interact with elements
+        //  will have public methods represent the services that the page offers
+        //  internals of app (selectors / locators) should be in Page Object, and can be accessed via "service"
+        GuineaPig page = new GuineaPig(driver);
+        
+        // expose "services" in page object that allow test to interact with page being tested
+        //  in this example, service would be fillOutEmailInput that interacts with emailInputField by typing into it
+        //  getEmail input is also a service, as we are using it to retrieve text in the emailInputField
+        page.fillOutEmailInput(emailInputText);
+        
+        // assertions should be part of test and not part of Page object
+        // each test should be verifying one piece of functionality (atomic testing)
+        assertEquals(page.getEmailInput(), emailInputText);
+    }
+
+}
