@@ -23,6 +23,7 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
+// import java libraries
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -65,7 +66,7 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * DataProvider that explicitly sets the browser combinations to be used.
      *
      * @param testMethod
-     * @return
+     * @return Two dimensional array of objects with browser, version, and platform information
      */
     @DataProvider(name = "hardCodedBrowsers", parallel = true)
     public static Object[][] sauceBrowserDataProvider(Method testMethod) {
@@ -163,21 +164,30 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
         String emailInputText = "abc@gmail.com";
         
         
-        // actions and interaction with page should go here...
+        /*
+         actions and interaction with page should go here...
+        */
         driver.get("https://saucelabs.com/test/guinea-pig");
-        
-        // use page object to interact with elements
-        //  will have public methods represent the services that the page offers
-        //  internals of app (selectors / locators) should be in Page Object, and can be accessed via "service"
-        GuineaPig page = new GuineaPig(driver);
-        
-        // expose "services" in page object that allow test to interact with page being tested
-        //  in this example, service would be fillOutEmailInput that interacts with emailInputField by typing into it
-        //  getEmail input is also a service, as we are using it to retrieve text in the emailInputField
+
+        /*
+         Use page object pattern to interact with application under test.
+
+             Page object will have public methods represent the "services" that the page offers.
+             Page object will also contain the internals of the app (selectors / locators), which will
+                 which can be accessed or ainteracted with via a "service"
+        */
+        GuineaPigPage page = new GuineaPigPage(driver);
+
+        /*
+         fillOutEmailInput page is an exposed "service",
+             which interacts with the email input field element by sending text to it.
+        */
         page.fillOutEmailInput(emailInputText);
-        
-        // assertions should be part of test and not part of Page object
-        // each test should be verifying one piece of functionality (atomic testing)
+
+        /*
+         Assertions should be part of test and not part of Page object.
+         Each test should be verifying one piece of functionality (atomic testing)
+        */
         assertEquals(page.getEmailInput(), emailInputText);
     }
 
