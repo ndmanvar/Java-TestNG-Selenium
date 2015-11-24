@@ -9,7 +9,7 @@
 to run: `mvn test`
 
 # Useful links
-https://code.google.com/p/selenium/wiki/PageObjects
-http://docs.seleniumhq.org/docs/
-http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#explicit-and-implicit-waits
-http://stackoverflow.com/questions/27355003/advise-on-hierarchy-for-element-locators-in-selenium-webdriver
+* https://code.google.com/p/selenium/wiki/PageObjects
+* http://docs.seleniumhq.org/docs/
+* http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#explicit-and-implicit-waits
+* http://stackoverflow.com/questions/27355003/advise-on-hierarchy-for-element-locators-in-selenium-webdriver
