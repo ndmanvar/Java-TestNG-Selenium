@@ -115,23 +115,25 @@ public class SampleSauceTest implements SauceOnDemandSessionIdProvider, SauceOnD
      * @throws MalformedURLException if an error occurs parsing the url
      */
     private WebDriver createDriver(String browser, String version, String os, String methodName) throws MalformedURLException {
-
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
-        if (version != null) {
-            capabilities.setCapability(CapabilityType.VERSION, version);
-        }
-        capabilities.setCapability(CapabilityType.PLATFORM, os);
 
+        // set desired capabilities to launch appropriate browser on Sauce
+        capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
+        capabilities.setCapability(CapabilityType.VERSION, version);
+        capabilities.setCapability(CapabilityType.PLATFORM, os);
         capabilities.setCapability("name", methodName);
+
+        // Launch remote browser and set it as the current thread
         webDriver.set(new RemoteWebDriver(
                 new URL("http://" + authentication.getUsername() + ":" + authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"),
                 capabilities));
+
+        // set current sessionId        
         String id = ((RemoteWebDriver) getWebDriver()).getSessionId().toString();
         sessionId.set(id);
 
-        String message = String.format("SauceOnDemandSessionID=%1$s job-name=%2$s", id, methodName);
-        System.out.println(message);
+        // print out sessionId and jobname for consumption by Sauce Jenkins plugin
+        System.out.println(String.format("SauceOnDemandSessionID=%1$s job-name=%2$s", id, methodName));
 
         return webDriver.get();
     }
