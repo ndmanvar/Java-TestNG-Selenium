@@ -1,4 +1,0 @@
----
-  language: "OracleJDK 1.8"
-  builder: "maven"
-  mavenVersion: "3.2.5"
